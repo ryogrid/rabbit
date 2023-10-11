@@ -7,9 +7,9 @@ module.exports = {
     extend: {
       colors: {
         // a color for primary actions like a submit button.
-        primary: colors.rose['300'],
-        'primary-disabled': colors.rose['200'],
-        'sidebar-bg': colors.rose['100'],
+        primary: colors.purple['300'],
+        'primary-disabled': colors.purple['200'],
+        'sidebar-bg': colors.purple['100'],
       },
     },
   },

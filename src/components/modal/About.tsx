@@ -53,7 +53,7 @@ const About: Component<AboutProps> = (props) => {
           おかしな動作を見つけたら
           <a
             class="text-blue-500 underline"
-            href="https://github.com/syusui-s/rabbit/issues/new/choose"
+            href="https://github.com/ryogrid/rabbit/issues/new/choose"
             target="_blank"
             rel="noopener noreferrer"
           >
@@ -66,7 +66,7 @@ const About: Component<AboutProps> = (props) => {
 
         <p class="my-4">
           ソースコードは
-          <SafeLink class="text-blue-400 underline" href="https://github.com/syusui-s/rabbit">
+          <SafeLink class="text-blue-400 underline" href="https://github.com/ryogrid/rabbit">
             GitHub
           </SafeLink>
           で入手できます。
@@ -75,6 +75,7 @@ const About: Component<AboutProps> = (props) => {
         <h2 class="my-4 text-xl font-bold">利用規約</h2>
 
         <p class="my-4">Copyright (C) 2023 Shusui Moyatani</p>
+        <p class="my-4">Customized by Ryo Kanbayashi 2023</p>
 
         <p class="my-4">
           このプログラムは自由ソフトウェアです。フリーソフトウェア財団から発行された
