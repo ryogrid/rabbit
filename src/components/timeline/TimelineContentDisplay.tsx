@@ -30,8 +30,8 @@ const RepliesDisplay: Component<{ event: NostrEvent }> = (props) => {
   const { events } = useSubscription(() => ({
     relayUrls: config().relayUrls,
     filters: [
-      { kinds: [1], ids: relatedEvents(event()), limit: 25 },
-      { kinds: [1], '#e': [props.event.id], limit: 25 } as Filter,
+      { kinds: [1], ids: relatedEvents(event()), limit: 100 },
+      { kinds: [1], '#e': [props.event.id], limit: 100 } as Filter,
     ],
     limit: 200,
   }));
