@@ -53,7 +53,7 @@ const About: Component<AboutProps> = (props) => {
           おかしな動作を見つけたら
           <a
             class="text-blue-500 underline"
-            href="https://github.com/ryogrid/rabbit/issues/new/choose"
+            href="https://github.com/syusui-s/rabbit/issues/new/choose"
             target="_blank"
             rel="noopener noreferrer"
           >
