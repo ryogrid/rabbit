@@ -62,7 +62,7 @@ const useSubscription = (propsProvider: () => UseSubscriptionProps | null) => {
   });
 
   const addEvent = (event: NostrEvent) => {
-    const limit = propsProvider()?.limit ?? 50;
+    const limit = propsProvider()?.limit ?? 500; // 50;
 
     setEvents((current) => {
       const sorted = utils.insertEventIntoDescendingList(current, event).slice(0, limit);
