@@ -52,7 +52,7 @@ const Hello: Component = () => {
     <div class="mx-auto flex max-w-[640px] flex-col items-center p-4 text-stone-600">
       <div class="flex flex-col items-center gap-4 rounded bg-white p-4">
         <img src={resolveAsset('images/rabbit_256.png')} width="96" alt="logo" height="96" />
-        <h1 class="text-5xl font-black text-red-300">Usagi</h1>
+        <h1 class="text-5xl font-black text-purple-300">Usagi</h1>
         <div>Usagi is a Web client for Nostr.</div>
         <p class="text-center">
           <span class="font-bold text-red-400">注意: 現在ベータ版です。</span>
