@@ -43,7 +43,7 @@ const About: Component<AboutProps> = (props) => {
           <img src={resolveAsset('images/rabbit_app_256.png')} alt="Logo" width="64" height="64" />
 
           <h1 class="my-4">
-            Rabbit <span id="app-version">v{packageInfo()?.self?.version}</span>
+            Usagi (Customized Rabbit) <span id="app-version">v{packageInfo()?.self?.version}</span>
           </h1>
         </div>
 
