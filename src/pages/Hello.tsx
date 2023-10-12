@@ -52,10 +52,10 @@ const Hello: Component = () => {
     <div class="mx-auto flex max-w-[640px] flex-col items-center p-4 text-stone-600">
       <div class="flex flex-col items-center gap-4 rounded bg-white p-4">
         <img src={resolveAsset('images/rabbit_256.png')} width="96" alt="logo" height="96" />
-        <h1 class="text-5xl font-black text-rose-300">Rabbit</h1>
-        <div>Rabbit is a Web client for Nostr.</div>
+        <h1 class="text-5xl font-black text-red-300">Usagi</h1>
+        <div>Usagi is a Web client for Nostr.</div>
         <p class="text-center">
-          <span class="font-bold text-rose-400">注意: 現在ベータ版です。</span>
+          <span class="font-bold text-red-400">注意: 現在ベータ版です。</span>
           <br />
           未実装の機能やバグがあることを承知の上でご利用ください。
         </p>
@@ -86,7 +86,7 @@ const Hello: Component = () => {
           </Match>
           <Match when={signerStatus() === 'available'}>
             <button
-              class="rounded bg-rose-400 p-4 text-lg font-bold text-white hover:shadow-md"
+              class="rounded bg-red-400 p-4 text-lg font-bold text-white hover:shadow-md"
               onClick={handleLogin}
             >
               {i18n()('hello.loginWithSigner')}
