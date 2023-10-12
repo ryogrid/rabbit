@@ -369,7 +369,7 @@ const NotePostForm: Component<NotePostFormProps> = (props) => {
             emojiTextAreaRef(el);
           }}
           name="text"
-          class="min-h-[40px] rounded-md border-none focus:ring-rose-300"
+          class="min-h-[40px] rounded-md border-none focus:ring-red-300"
           rows={4}
           placeholder={placeholder(mode())}
           onInput={handleInput}
@@ -395,8 +395,8 @@ const NotePostForm: Component<NotePostFormProps> = (props) => {
           <button
             class="flex items-center justify-center rounded p-2 text-xs font-bold text-white"
             classList={{
-              'bg-rose-300': !contentWarning(),
-              'bg-rose-400': contentWarning(),
+              'bg-primary-disabled': !contentWarning(),
+              'bg-primary': contentWarning(),
               'h-8': mode() === 'normal',
               'w-8': mode() === 'normal',
               'h-7': mode() === 'reply',
