@@ -19,14 +19,12 @@ type ColumnSettingsSectionProps = {
   children: JSX.Element;
 };
 
-const ColumnSettingsSection: Component<ColumnSettingsSectionProps> = (props) => {
-  return (
+const ColumnSettingsSection: Component<ColumnSettingsSectionProps> = (props) => (
     <div class="flex flex-col gap-2 border-b p-2">
       <div>{props.title}</div>
       <div>{props.children}</div>
     </div>
   );
-};
 
 const ColumnSettings: Component<ColumnSettingsProps> = (props) => {
   const i18n = useTranslation();
@@ -93,7 +91,7 @@ const ColumnSettings: Component<ColumnSettingsProps> = (props) => {
         </button>
         <div class="flex-1" />
         <button
-          class="px-2 py-4 text-rose-500 hover:text-rose-600"
+          class="px-2 py-4 text-purple-500 hover:text-purple-600"
           title={i18n()('column.config.removeColumn')}
           onClick={() => removeColumn(props.column.id)}
         >

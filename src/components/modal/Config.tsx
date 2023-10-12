@@ -36,7 +36,7 @@ const ProfileSection = () => {
       <h3 class="font-bold">{i18n()('config.profile.profile')}</h3>
       <div class="flex gap-2">
         <button
-          class="rounded border border-rose-300 px-4 py-2 font-bold text-rose-300"
+          class="rounded border border-purple-300 px-4 py-2 font-bold text-purple-300"
           onClick={() =>
             ensureNonNull([pubkey()])(([pubkeyNonNull]) => {
               showProfile(pubkeyNonNull);
@@ -46,7 +46,7 @@ const ProfileSection = () => {
           {i18n()('config.profile.openProfile')}
         </button>
         <button
-          class="rounded border border-rose-300 px-4 py-2 font-bold text-rose-300"
+          class="rounded border border-purple-300 px-4 py-2 font-bold text-purple-300"
           onClick={() => showProfileEdit()}
         >
           {i18n()('config.profile.editProfile')}
@@ -76,7 +76,7 @@ const RelayConfig = () => {
     const relayUrls = importedRelays.map(([relayUrl]) => relayUrl).join('\n');
 
     if (importedRelays.length === 0) {
-      window.alert(i18n()('config.relays.notConfigured'));
+      window.alert(i18n()('config.relays.notConfigupurple'));
       return;
     }
 
@@ -116,14 +116,14 @@ const RelayConfig = () => {
         </ul>
         <form class="flex gap-2" onSubmit={handleClickAddRelay}>
           <input
-            class="flex-1 rounded-md focus:border-rose-100 focus:ring-rose-300"
+            class="flex-1 rounded-md focus:border-purple-100 focus:ring-purple-300"
             type="text"
             name="relayUrl"
             value={relayUrlInput()}
             pattern={RelayUrlRegex}
             onChange={(ev) => setRelayUrlInput(ev.currentTarget.value)}
           />
-          <button type="submit" class="rounded bg-rose-300 p-2 font-bold text-white">
+          <button type="submit" class="rounded bg-purple-300 p-2 font-bold text-white">
             {i18n()('config.relays.addRelay')}
           </button>
         </form>
@@ -132,7 +132,7 @@ const RelayConfig = () => {
         <h3 class="pb-1 font-bold">{i18n()('config.relays.importRelays')}</h3>
         <button
           type="button"
-          class="rounded bg-rose-300 p-2 font-bold text-white"
+          class="rounded bg-purple-300 p-2 font-bold text-white"
           onClick={() => {
             importFromNIP07().catch((err) => {
               console.error('failed to import relays', err);
@@ -186,12 +186,12 @@ const DateFormatConfig = () => {
             <div class="flex flex-1 flex-row items-center gap-1 sm:flex-col">
               <button
                 type="button"
-                class="w-48 rounded border border-rose-300 p-2 font-bold sm:w-full"
+                class="w-48 rounded border border-purple-300 p-2 font-bold sm:w-full"
                 classList={{
-                  'bg-rose-300': config().dateFormat === id,
+                  'bg-purple-300': config().dateFormat === id,
                   'text-white': config().dateFormat === id,
                   'bg-white': config().dateFormat !== id,
-                  'text-rose-300': config().dateFormat !== id,
+                  'text-purple-300': config().dateFormat !== id,
                 }}
                 onClick={() => updateDateFormat(id)}
               >
@@ -215,7 +215,7 @@ const ToggleButton = (props: {
     classList={{
       'bg-white': !props.value,
       'justify-start': !props.value,
-      'bg-rose-300': props.value,
+      'bg-purple-300': props.value,
       'justify-end': props.value,
     }}
     area-label={props.value}
@@ -301,7 +301,7 @@ const EmojiConfig = () => {
         <label class="flex flex-1 items-center gap-1">
           <div class="w-9">{i18n()('config.customEmoji.shortcode')}</div>
           <input
-            class="flex-1 rounded-md focus:border-rose-100 focus:ring-rose-300"
+            class="flex-1 rounded-md focus:border-purple-100 focus:ring-purple-300"
             type="text"
             name="shortcode"
             placeholder="smiley"
@@ -314,7 +314,7 @@ const EmojiConfig = () => {
         <label class="flex flex-1 items-center gap-1">
           <div class="w-9">{i18n()('config.customEmoji.url')}</div>
           <input
-            class="flex-1 rounded-md focus:border-rose-100 focus:ring-rose-300"
+            class="flex-1 rounded-md focus:border-purple-100 focus:ring-purple-300"
             type="text"
             name="url"
             value={urlInput()}
@@ -324,7 +324,7 @@ const EmojiConfig = () => {
             onChange={(ev) => setUrlInput(ev.currentTarget.value)}
           />
         </label>
-        <button type="submit" class="w-24 self-end rounded bg-rose-300 p-2 font-bold text-white">
+        <button type="submit" class="w-24 self-end rounded bg-purple-300 p-2 font-bold text-white">
           {i18n()('config.customEmoji.addEmoji')}
         </button>
       </form>
@@ -359,13 +359,13 @@ const EmojiImport = () => {
       <p>{i18n()('config.customEmoji.emojiImportDescription')}</p>
       <form class="flex flex-col gap-2" onSubmit={handleClickSaveEmoji}>
         <textarea
-          class="flex-1 rounded-md focus:border-rose-100 focus:ring-rose-300"
+          class="flex-1 rounded-md focus:border-purple-100 focus:ring-purple-300"
           name="json"
           value={jsonInput()}
           placeholder='{ "smiley": "https://example.com/smiley.png" }'
           onChange={(ev) => setJSONInput(ev.currentTarget.value)}
         />
-        <button type="submit" class="w-24 self-end rounded bg-rose-300 p-2 font-bold text-white">
+        <button type="submit" class="w-24 self-end rounded bg-purple-300 p-2 font-bold text-white">
           {i18n()('config.customEmoji.importEmoji')}
         </button>
       </form>
@@ -421,13 +421,13 @@ const MuteConfig = () => {
         </ul>
         <form class="flex gap-2" onSubmit={handleClickAddKeyword}>
           <input
-            class="flex-1 rounded-md focus:border-rose-100 focus:ring-rose-300"
+            class="flex-1 rounded-md focus:border-purple-100 focus:ring-purple-300"
             type="text"
             name="keyword"
             value={keywordInput()}
             onChange={(ev) => setKeywordInput(ev.currentTarget.value)}
           />
-          <button type="submit" class="rounded bg-rose-300 p-2 font-bold text-white">
+          <button type="submit" class="rounded bg-purple-300 p-2 font-bold text-white">
             {i18n()('config.mute.add')}
           </button>
         </form>
@@ -557,7 +557,7 @@ const ConfigUI = (props: ConfigProps) => {
                   {(menuItem, i) => (
                     <li class="w-full">
                       <button
-                        class="flex w-full gap-2 py-3 hover:text-rose-400"
+                        class="flex w-full gap-2 py-3 hover:text-purple-400"
                         onClick={() => setMenuIndex(i)}
                       >
                         <span class="inline-block h-6 w-6">{menuItem.icon()}</span>

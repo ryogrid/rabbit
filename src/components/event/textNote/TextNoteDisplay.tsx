@@ -74,9 +74,9 @@ const EmojiReactions: Component<EmojiReactionsProps> = (props) => {
               classList={{
                 'text-zinc-400': !isReactedByMeWithThisContent,
                 'hover:bg-zinc-50': !isReactedByMeWithThisContent,
-                'bg-rose-50': isReactedByMeWithThisContent,
-                'border-rose-200': isReactedByMeWithThisContent,
-                'text-rose-400': isReactedByMeWithThisContent,
+                'bg-purple-50': isReactedByMeWithThisContent,
+                'border-purple-200': isReactedByMeWithThisContent,
+                'text-purple-400': isReactedByMeWithThisContent,
               }}
               type="button"
               onClick={() => props.onReaction(reactionTypes)}
@@ -217,7 +217,7 @@ const TextNoteDisplay: Component<TextNoteDisplayProps> = (props) => {
     },
     {
       when: () => event().pubkey === pubkey(),
-      content: () => <span class="text-red-500">{i18n()('post.deletePost')}</span>,
+      content: () => <span class="text-purple-500">{i18n()('post.deletePost')}</span>,
       onSelect: () => {
         const p = pubkey();
         if (p == null) return;
@@ -386,8 +386,8 @@ const TextNoteDisplay: Component<TextNoteDisplayProps> = (props) => {
                 class="flex shrink-0 items-center gap-1"
                 classList={{
                   'text-zinc-400': !isReactedByMe() || isReactedByMeWithEmoji(),
-                  'hover:text-rose-400': !isReactedByMe() || isReactedByMeWithEmoji(),
-                  'text-rose-400':
+                  'hover:text-purple-400': !isReactedByMe() || isReactedByMeWithEmoji(),
+                  'text-purple-400':
                     (isReactedByMe() && !isReactedByMeWithEmoji()) ||
                     publishReactionMutation.isLoading,
                 }}
@@ -417,8 +417,8 @@ const TextNoteDisplay: Component<TextNoteDisplayProps> = (props) => {
                   class="flex shrink-0 items-center gap-1"
                   classList={{
                     'text-zinc-400': !isReactedByMe() || !isReactedByMeWithEmoji(),
-                    'hover:text-rose-400': !isReactedByMe() || !isReactedByMeWithEmoji(),
-                    'text-rose-400':
+                    'hover:text-purple-400': !isReactedByMe() || !isReactedByMeWithEmoji(),
+                    'text-purple-400':
                       (isReactedByMe() && isReactedByMeWithEmoji()) ||
                       publishReactionMutation.isLoading,
                   }}

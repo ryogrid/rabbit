@@ -51,7 +51,7 @@ const SearchButton = () => {
       >
         <input
           ref={inputRef}
-          class="h-8 w-full rounded border border-stone-300 focus:border-rose-100 focus:ring-rose-300"
+          class="h-8 w-full rounded border border-stone-300 focus:border-purple-100 focus:ring-purple-300"
           type="text"
           value={query()}
           onChange={(ev) => setQuery(ev.currentTarget.value)}
@@ -93,7 +93,7 @@ const SideBar: Component = () => {
 
   return (
     <div class="flex shrink-0 flex-row border-r bg-sidebar-bg">
-      <div class="flex w-14 flex-auto flex-col items-center gap-3 border-r border-rose-200 pt-5">
+      <div class="flex w-14 flex-auto flex-col items-center gap-3 border-r border-purple-200 pt-5">
         <div class="flex flex-col items-center gap-3">
           <button
             class="h-9 w-9 rounded-full border border-primary bg-primary p-2 text-2xl text-white"

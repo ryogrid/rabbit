@@ -41,7 +41,7 @@ const useEmojiComplete = () => {
           className: 'bg-white shadow rounded',
           item: {
             className: 'cursor-pointer',
-            activeClassName: 'bg-rose-100 cursor-pointer',
+            activeClassName: 'bg-purple-100 cursor-pointer',
           },
         },
       },

@@ -289,7 +289,7 @@ const ProfileDisplay: Component<ProfileDisplayProps> = (props) => {
                 <Match when={following()}>
                   <button
                     class="rounded-full border border-primary bg-primary px-4 py-2
-                    text-center font-bold text-white hover:bg-rose-500 sm:w-36"
+                    text-center font-bold text-white hover:bg-purple-500 sm:w-36"
                     onMouseEnter={() => setHoverFollowButton(true)}
                     onMouseLeave={() => setHoverFollowButton(false)}
                     onClick={() => unfollow()}
@@ -303,7 +303,7 @@ const ProfileDisplay: Component<ProfileDisplayProps> = (props) => {
                 <Match when={!following()}>
                   <button
                     class="w-28 rounded-full border border-primary px-4 py-2 text-primary
-                    hover:border-rose-400 hover:text-rose-400"
+                    hover:border-purple-400 hover:text-purple-400"
                     onClick={() => follow()}
                     disabled={updateContactsMutation.isLoading}
                   >
@@ -314,7 +314,7 @@ const ProfileDisplay: Component<ProfileDisplayProps> = (props) => {
               <ContextMenu menu={menu}>
                 <button
                   class="w-10 rounded-full border border-primary p-2 text-primary
-                  hover:border-rose-400 hover:text-rose-400"
+                  hover:border-purple-400 hover:text-purple-400"
                 >
                   <EllipsisHorizontal />
                 </button>
@@ -346,7 +346,7 @@ const ProfileDisplay: Component<ProfileDisplayProps> = (props) => {
                 {nip05Identifier()?.ident}
                 <Switch
                   fallback={
-                    <span class="inline-block h-4 w-4 text-rose-500">
+                    <span class="inline-block h-4 w-4 text-purple-500">
                       <ExclamationCircle />
                     </span>
                   }

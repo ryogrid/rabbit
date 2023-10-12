@@ -49,9 +49,9 @@ em-emoji-picker {
   background-color: #fbf9f9;
 }
 .scrollbar::-webkit-scrollbar-thumb {
-  background-color: #FF0000;
+  background-color: #FF00FF;
   border-radius: 8px;
 }
 .scrollbar::-webkit-scrollbar-thumb:hover {
-  background-color: #FF0000;
+  background-color: #FF00FF;
 }

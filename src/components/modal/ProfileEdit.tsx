@@ -170,7 +170,7 @@ const ProfileEdit: Component<ProfileEditProps> = (props) => {
               {i18n()('profile.edit.icon')}
             </label>
             <input
-              class="w-full rounded-md focus:border-rose-100 focus:ring-rose-300"
+              class="w-full rounded-md focus:border-purple-100 focus:ring-purple-300"
               type="text"
               id="picture"
               name="picture"
@@ -186,7 +186,7 @@ const ProfileEdit: Component<ProfileEditProps> = (props) => {
               {i18n()('profile.edit.banner')}
             </label>
             <input
-              class="w-full rounded-md focus:border-rose-100 focus:ring-rose-300"
+              class="w-full rounded-md focus:border-purple-100 focus:ring-purple-300"
               type="text"
               id="banner"
               name="banner"
@@ -204,7 +204,7 @@ const ProfileEdit: Component<ProfileEditProps> = (props) => {
             <div class="flex w-full items-center gap-2">
               <span>@</span>
               <input
-                class="flex-1 rounded-md focus:border-rose-100 focus:ring-rose-300"
+                class="flex-1 rounded-md focus:border-purple-100 focus:ring-purple-300"
                 type="text"
                 id="name"
                 name="name"
@@ -223,7 +223,7 @@ const ProfileEdit: Component<ProfileEditProps> = (props) => {
               {i18n()('profile.edit.displayName')}
             </label>
             <input
-              class="w-full rounded-md focus:border-rose-100 focus:ring-rose-300"
+              class="w-full rounded-md focus:border-purple-100 focus:ring-purple-300"
               type="text"
               name="displayName"
               value={displayName()}
@@ -238,7 +238,7 @@ const ProfileEdit: Component<ProfileEditProps> = (props) => {
               {i18n()('profile.edit.about')}
             </label>
             <textarea
-              class="w-full rounded-md focus:border-rose-100 focus:ring-rose-300"
+              class="w-full rounded-md focus:border-purple-100 focus:ring-purple-300"
               name="about"
               value={about()}
               rows="5"
@@ -251,7 +251,7 @@ const ProfileEdit: Component<ProfileEditProps> = (props) => {
               {i18n()('profile.edit.website')}
             </label>
             <input
-              class="w-full rounded-md focus:border-rose-100 focus:ring-rose-300"
+              class="w-full rounded-md focus:border-purple-100 focus:ring-purple-300"
               type="text"
               name="website"
               value={website()}
@@ -266,7 +266,7 @@ const ProfileEdit: Component<ProfileEditProps> = (props) => {
               {i18n()('profile.edit.nip05')}
             </label>
             <input
-              class="w-full rounded-md focus:border-rose-100 focus:ring-rose-300"
+              class="w-full rounded-md focus:border-purple-100 focus:ring-purple-300"
               type="text"
               name="nip05"
               value={nip05()}
@@ -283,7 +283,7 @@ const ProfileEdit: Component<ProfileEditProps> = (props) => {
             </label>
             <span class="text-xs">{i18n()('profile.edit.lightningAddressDescription')}</span>
             <input
-              class="w-full rounded-md focus:border-rose-100 focus:ring-rose-300"
+              class="w-full rounded-md focus:border-purple-100 focus:ring-purple-300"
               type="text"
               name="website"
               value={lightningAddress()}
@@ -312,14 +312,14 @@ const ProfileEdit: Component<ProfileEditProps> = (props) => {
           <div class="flex gap-2">
             <button
               type="submit"
-              class="rounded bg-rose-300 p-2 font-bold text-white hover:bg-rose-400"
+              class="rounded bg-purple-300 p-2 font-bold text-white hover:bg-purple-400"
               disabled={mutation.isLoading}
             >
               {i18n()('profile.edit.save')}
             </button>
             <button
               type="button"
-              class="rounded border border-rose-300 p-2 font-bold text-rose-300 hover:border-rose-400 hover:text-rose-400"
+              class="rounded border border-purple-300 p-2 font-bold text-purple-300 hover:border-purple-400 hover:text-purple-400"
               onClick={() => props.onClose()}
             >
               {i18n()('profile.edit.cancel')}
