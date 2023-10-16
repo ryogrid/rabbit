@@ -5,6 +5,10 @@ import { render } from 'solid-js/web';
 import '@/index.css';
 import App from '@/App';
 
+import { inject } from '@vercel/analytics';
+
+inject();
+
 render(
   () => (
     <Router source={hashIntegration()}>

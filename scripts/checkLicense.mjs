@@ -12,6 +12,7 @@ const acceptableLicenses = [
   'BSD-3-Clause',
   'CC-BY-4.0',
   'Unlicense',
+  'MPL-2.0',
 ];
 
 const asyncLicenseChecker = (options) => {

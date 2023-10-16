@@ -58,6 +58,7 @@
     "@textcomplete/textarea": "^0.1.12",
     "@thisbeyond/solid-dnd": "^0.7.4",
     "@types/lodash": "^4.14.195",
+    "@vercel/analytics": "^1.1.1",
     "emoji-mart": "^5.5.2",
     "heroicons": "^2.0.18",
     "i18next": "^23.2.8",
