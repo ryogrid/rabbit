@@ -31,7 +31,7 @@ const fetchPackageInfo = async (): Promise<PackageInfo> => {
   return JSON.parse(body) as PackageInfo;
 };
 
-const commit = import.meta.env.COMMIT as string | null;
+const commit = import.meta.env.VITE_COMMIT as string | null;
 
 const About: Component<AboutProps> = (props) => {
   const [packageInfo] = createResource(fetchPackageInfo);
@@ -43,7 +43,11 @@ const About: Component<AboutProps> = (props) => {
           <img src={resolveAsset('images/rabbit_app_256.png')} alt="Logo" width="64" height="64" />
 
           <h1 class="my-4">
-            Usagi (Customized Rabbit) <span id="app-version">v{packageInfo()?.self?.version}</span>
+            Usagi (Customized Rabbit)
+            <span id="app-version">
+              v{packageInfo()?.self?.version}
+              <Show when={commit}> ({commit})</Show>
+            </span>
           </h1>
         </div>
 

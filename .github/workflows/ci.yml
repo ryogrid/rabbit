@@ -1,9 +1,9 @@
 name: CI
 
 on:
+  pull_request:
   push:
-    branch:
-      - "*"
+
 jobs:
   ci:
     permissions:
@@ -18,6 +18,9 @@ jobs:
         id: npm-cache-dir
         run: |
           echo "dir=$(npm config get cache)" >> $GITHUB_OUTPUT
+      - name: Get hash
+        id: hash
+        run: echo "sha_short=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
       - uses: actions/cache@v3
         id: npm-cache
         with:
@@ -27,13 +30,16 @@ jobs:
             ${{ runner.os }}-node-
       - name: Install dependencies
         run: npm ci
-      # TODO あとでちゃんと直す
-      # - name: Lint / Format
-      #   run: npm run eslint
+      - name: Lint / Format
+        run: npm run lint
+      - name: Check types
+        run: npm run tsc
       - name: Test
         run: npm run test
       - name: Build
-        run: npm run build -- --base="/rabbit/" # https://syusui-s.github.io/rabbit/
+        run: npm run build -- --base="/rabbit/"
+        env:
+          VITE_COMMIT: ${{ steps.hash.outputs.sha_short }}
       - name: Check license
         run: npm run checkLicense
       - name: Deploy

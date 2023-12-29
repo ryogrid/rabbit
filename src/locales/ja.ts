@@ -56,6 +56,8 @@ export default {
     unmute: 'ミュート解除',
     followMyself: '自分をフォロー',
     unfollowMyself: '自分をフォロー解除',
+    addUserColumn: 'ユーザカラムを追加',
+    addUserHomeColumn: 'ホームカラムを追加',
     confirmUnfollow: '本当にフォロー解除しますか？',
     confirmUpdateEvenIfEmpty: stripMargin`
       フォローリストが空のようです。初めてのフォローであれば問題ありません。
@@ -145,6 +147,8 @@ export default {
       reaction: 'リアクション',
       enableEmojiReaction: '絵文字を選べるようにする',
       showEmojiReaction: '投稿にリアクションされた絵文字を表示する',
+      embedding: '埋め込み',
+      embeddingDescription: '各項目の埋め込みを有効にするかどうか',
       others: 'その他',
       keepOpenPostForm: '投稿後も投稿欄を開いたままにする',
       showMediaByDefault: 'デフォルトで画像や動画を読み込む',

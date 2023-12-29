@@ -8,13 +8,18 @@ import CheckCircle from 'heroicons/24/solid/check-circle.svg';
 import ExclamationCircle from 'heroicons/24/solid/exclamation-circle.svg';
 
 import ContextMenu, { MenuItem } from '@/components/ContextMenu';
+import TextNoteContentDisplay from '@/components/event/textNote/TextNoteContentDisplay';
 import BasicModal from '@/components/modal/BasicModal';
 import UserList from '@/components/modal/UserList';
 import Timeline from '@/components/timeline/Timeline';
 import SafeLink from '@/components/utils/SafeLink';
+import { createFollowingColumn, createPostsColumn } from '@/core/column';
 import useConfig from '@/core/useConfig';
+import { useRequestCommand } from '@/hooks/useCommandBus';
 import useModalState from '@/hooks/useModalState';
 import { useTranslation } from '@/i18n/useTranslation';
+import { genericEvent } from '@/nostr/event';
+import parseTextNote, { toResolved } from '@/nostr/parseTextNote';
 import useCommands from '@/nostr/useCommands';
 import useFollowers from '@/nostr/useFollowers';
 import useFollowings, { fetchLatestFollowings } from '@/nostr/useFollowings';
@@ -25,7 +30,6 @@ import useVerification from '@/nostr/useVerification';
 import ensureNonNull from '@/utils/ensureNonNull';
 import epoch from '@/utils/epoch';
 import npubEncodeFallback from '@/utils/npubEncodeFallback';
-import stripMargin from '@/utils/stripMargin';
 import timeout from '@/utils/timeout';
 
 export type ProfileDisplayProps = {
@@ -43,7 +47,8 @@ const FollowersCount: Component<{ pubkey: string }> = (props) => {
 
 const ProfileDisplay: Component<ProfileDisplayProps> = (props) => {
   const i18n = useTranslation();
-  const { config, addMutedPubkey, removeMutedPubkey, isPubkeyMuted } = useConfig();
+  const { config, addMutedPubkey, removeMutedPubkey, isPubkeyMuted, saveColumn } = useConfig();
+  const request = useRequestCommand();
   const commands = useCommands();
   const myPubkey = usePubkey();
   const { showProfileEdit } = useModalState();
@@ -56,7 +61,11 @@ const ProfileDisplay: Component<ProfileDisplayProps> = (props) => {
   const [modal, setModal] = createSignal<'Following' | null>(null);
   const closeModal = () => setModal(null);
 
-  const { profile, query: profileQuery } = useProfile(() => ({
+  const {
+    profile,
+    event: profileEvent,
+    query: profileQuery,
+  } = useProfile(() => ({
     pubkey: props.pubkey,
   }));
   const { verification, query: verificationQuery } = useVerification(() =>
@@ -73,6 +82,16 @@ const ProfileDisplay: Component<ProfileDisplayProps> = (props) => {
   const isVerified = () => verification()?.pubkey === props.pubkey;
   const isMuted = () => isPubkeyMuted(props.pubkey);
 
+  const aboutParsed = createMemo(() => {
+    const ev = profileEvent();
+    const about = profile()?.about;
+    if (ev == null || about == null) return undefined;
+
+    const parsed = parseTextNote(about);
+    const resolved = toResolved(parsed, genericEvent(ev));
+    return resolved;
+  });
+
   const {
     followingPubkeys: myFollowingPubkeys,
     invalidateFollowings: invalidateMyFollowings,
@@ -83,7 +102,6 @@ const ProfileDisplay: Component<ProfileDisplayProps> = (props) => {
     })),
   );
   const following = () => myFollowingPubkeys().includes(props.pubkey);
-  const refetchMyFollowing = () => myFollowingQuery.refetch();
 
   const { followingPubkeys: userFollowingPubkeys, query: userFollowingQuery } = useFollowings(
     () => ({ pubkey: props.pubkey }),
@@ -94,7 +112,7 @@ const ProfileDisplay: Component<ProfileDisplayProps> = (props) => {
     return p != null && userFollowingPubkeys().includes(p);
   };
 
-  const updateContactsMutation = createMutation({
+  const updateContactsMutation = createMutation(() => ({
     mutationKey: ['updateContacts'],
     mutationFn: (...params: Parameters<typeof commands.updateContacts>) =>
       commands
@@ -121,7 +139,7 @@ const ProfileDisplay: Component<ProfileDisplayProps> = (props) => {
         .then(() => myFollowingQuery.refetch())
         .catch((err) => console.error('failed to refetch contacts', err));
     },
-  });
+  }));
 
   const updateContacts = async (op: 'follow' | 'unfollow', pubkey: string) => {
     try {
@@ -197,6 +215,24 @@ const ProfileDisplay: Component<ProfileDisplayProps> = (props) => {
       content: () => i18n()('profile.copyPubkey'),
       onSelect: () => {
         navigator.clipboard.writeText(npub()).catch((err) => window.alert(err));
+      },
+    },
+    {
+      content: () => i18n()('profile.addUserColumn'),
+      onSelect: () => {
+        const columnName = profile()?.name ?? npub();
+        saveColumn(createPostsColumn({ name: columnName, pubkey: props.pubkey }));
+        request({ command: 'moveToLastColumn' }).catch((err) => console.error(err));
+        props.onClose?.();
+      },
+    },
+    {
+      content: () => i18n()('profile.addUserHomeColumn'),
+      onSelect: () => {
+        const columnName = `${i18n()('column.home')} / ${profile()?.name ?? npub()}`;
+        saveColumn(createFollowingColumn({ name: columnName, pubkey: props.pubkey }));
+        request({ command: 'moveToLastColumn' }).catch((err) => console.error(err));
+        props.onClose?.();
       },
     },
     {
@@ -276,12 +312,12 @@ const ProfileDisplay: Component<ProfileDisplayProps> = (props) => {
                     {i18n()('profile.editProfile')}
                   </button>
                 </Match>
-                <Match when={updateContactsMutation.isLoading || updatingContacts()}>
+                <Match when={updateContactsMutation.isPending || updatingContacts()}>
                   <span class="rounded-full border border-primary px-4 py-2 text-primary sm:text-base">
                     {i18n()('general.updating')}
                   </span>
                 </Match>
-                <Match when={myFollowingQuery.isLoading || myFollowingQuery.isFetching}>
+                <Match when={myFollowingQuery.isPending || myFollowingQuery.isFetching}>
                   <span class="rounded-full border border-primary px-4 py-2 text-primary sm:text-base">
                     {i18n()('general.loading')}
                   </span>
@@ -293,7 +329,7 @@ const ProfileDisplay: Component<ProfileDisplayProps> = (props) => {
                     onMouseEnter={() => setHoverFollowButton(true)}
                     onMouseLeave={() => setHoverFollowButton(false)}
                     onClick={() => unfollow()}
-                    disabled={updateContactsMutation.isLoading}
+                    disabled={updateContactsMutation.isPending}
                   >
                     <Show when={!hoverFollowButton()} fallback={i18n()('profile.unfollow')}>
                       {i18n()('profile.followingCurrently')}
@@ -305,7 +341,7 @@ const ProfileDisplay: Component<ProfileDisplayProps> = (props) => {
                     class="w-28 rounded-full border border-primary px-4 py-2 text-primary
                     hover:border-purple-400 hover:text-purple-400"
                     onClick={() => follow()}
-                    disabled={updateContactsMutation.isLoading}
+                    disabled={updateContactsMutation.isPending}
                   >
                     {i18n()('profile.follow')}
                   </button>
@@ -321,7 +357,7 @@ const ProfileDisplay: Component<ProfileDisplayProps> = (props) => {
               </ContextMenu>
             </div>
             <Switch>
-              <Match when={userFollowingQuery.isLoading}>
+              <Match when={userFollowingQuery.isPending}>
                 <div class="shrink-0 text-xs">{i18n()('general.loading')}</div>
               </Match>
               <Match when={followed()}>
@@ -333,7 +369,7 @@ const ProfileDisplay: Component<ProfileDisplayProps> = (props) => {
       </div>
       <div class="flex items-start px-4 pt-2">
         <div class="h-16 shrink overflow-hidden">
-          <Show when={profileQuery.isLoading}>{i18n()('general.loading')}</Show>
+          <Show when={profileQuery.isPending}>{i18n()('general.loading')}</Show>
           <Show when={(profile()?.display_name?.length ?? 0) > 0}>
             <div class="truncate text-xl font-bold">{profile()?.display_name}</div>
           </Show>
@@ -351,7 +387,7 @@ const ProfileDisplay: Component<ProfileDisplayProps> = (props) => {
                     </span>
                   }
                 >
-                  <Match when={verificationQuery.isLoading}>
+                  <Match when={verificationQuery.isPending}>
                     <span class="inline-block h-3 w-3">
                       <ArrowPath />
                     </span>
@@ -370,10 +406,12 @@ const ProfileDisplay: Component<ProfileDisplayProps> = (props) => {
           </div>
         </div>
       </div>
-      <Show when={(profile()?.about ?? '').length > 0}>
-        <div class="max-h-40 shrink-0 overflow-y-auto whitespace-pre-wrap px-4 py-2 text-sm">
-          {profile()?.about}
-        </div>
+      <Show when={aboutParsed()} keyed>
+        {(parsed) => (
+          <div class="max-h-40 shrink-0 overflow-y-auto whitespace-pre-wrap px-4 py-2 text-sm">
+            <TextNoteContentDisplay parsed={parsed} embedding={false} initialHidden />
+          </div>
+        )}
       </Show>
       <div class="flex border-t px-4 py-2">
         <button class="flex flex-1 flex-col items-start" onClick={() => setModal('Following')}>

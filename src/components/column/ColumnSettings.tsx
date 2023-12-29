@@ -20,11 +20,19 @@ type ColumnSettingsSectionProps = {
 };
 
 const ColumnSettingsSection: Component<ColumnSettingsSectionProps> = (props) => (
+<<<<<<< HEAD
     <div class="flex flex-col gap-2 border-b p-2">
       <div>{props.title}</div>
       <div>{props.children}</div>
     </div>
   );
+=======
+  <div class="flex flex-col gap-2 border-b p-2">
+    <div>{props.title}</div>
+    <div>{props.children}</div>
+  </div>
+);
+>>>>>>> main
 
 const ColumnSettings: Component<ColumnSettingsProps> = (props) => {
   const i18n = useTranslation();

@@ -1,11 +1,11 @@
 import { createMemo } from 'solid-js';
 
 import { createQuery, useQueryClient, type CreateQueryResult } from '@tanstack/solid-query';
-import { Event as NostrEvent } from 'nostr-tools';
+import { Event as NostrEvent } from 'nostr-tools/pure';
 
 import { genericEvent } from '@/nostr/event';
 import { latestEventQuery } from '@/nostr/query';
-import { BatchedEventsTask, registerTask } from '@/nostr/useBatchedEvents';
+import { BatchedEventsTask, FollowingsTask, registerTask } from '@/nostr/useBatchedEvents';
 
 type Following = {
   pubkey: string;
@@ -56,7 +56,7 @@ export const fetchLatestFollowings = async (
   { pubkey }: UseFollowingsProps,
   signal?: AbortSignal,
 ) => {
-  const task = new BatchedEventsTask({ type: 'Followings', pubkey });
+  const task = new BatchedEventsTask<FollowingsTask>({ type: 'Followings', pubkey });
   registerTask({ task, signal });
 
   const latestFollowings = await task.latestEventPromise();
@@ -68,27 +68,26 @@ const useFollowings = (propsProvider: () => UseFollowingsProps | null): UseFollo
   const props = createMemo(propsProvider);
   const genQueryKey = () => ['useFollowings', props()] as const;
 
-  const query = createQuery(
-    genQueryKey,
-    latestEventQuery({
+  const query = createQuery(() => ({
+    queryKey: genQueryKey(),
+    queryFn: latestEventQuery<ReturnType<typeof genQueryKey>>({
       taskProvider: ([, currentProps]) => {
         if (currentProps == null) return null;
         const { pubkey } = currentProps;
-        return new BatchedEventsTask({ type: 'Followings', pubkey });
+        return new BatchedEventsTask<FollowingsTask>({ type: 'Followings', pubkey });
       },
       queryClient,
     }),
-    {
-      staleTime: 5 * 60 * 1000, // 5 min
-      cacheTime: 24 * 60 * 60 * 1000, // 24 hour
-      refetchOnMount: true,
-      refetchOnWindowFocus: false,
-      refetchOnReconnect: false,
-      refetchInterval: 0,
-    },
-  );
+    staleTime: 5 * 60 * 1000, // 5 min
+    gcTime: 3 * 24 * 60 * 60 * 1000, // 3 days
+    refetchOnMount: true,
+    refetchOnWindowFocus: false,
+    refetchOnReconnect: false,
+    refetchInterval: 0,
+  }));
 
-  const invalidateFollowings = (): Promise<void> => queryClient.invalidateQueries(genQueryKey());
+  const invalidateFollowings = (): Promise<void> =>
+    queryClient.invalidateQueries({ queryKey: genQueryKey() });
 
   return { ...buildMethods(() => query.data), invalidateFollowings, query };
 };

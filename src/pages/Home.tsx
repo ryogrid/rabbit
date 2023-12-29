@@ -6,7 +6,6 @@ import Columns from '@/components/column/Columns';
 import GlobalModal from '@/components/modal/GlobalModal';
 import SideBar from '@/components/SideBar';
 import useConfig from '@/core/useConfig';
-import useModalState from '@/hooks/useModalState';
 import usePersistStatus from '@/hooks/usePersistStatus';
 import { useMountShortcutKeys } from '@/hooks/useShortcutKeys';
 import usePool from '@/nostr/usePool';
@@ -26,9 +25,12 @@ const Home: Component = () => {
     config().relayUrls.map(async (relayUrl) => {
       try {
         const relay = await pool().ensureRelay(relayUrl);
-        relay.on('notice', (msg: string) => {
+        relay.onnotice = (msg: string) => {
           console.error(`NOTICE: ${relayUrl}: ${msg}`);
-        });
+        };
+        relay.onclose = () => {
+          console.warn(`CLOSE: ${relayUrl}`);
+        };
       } catch (err) {
         console.error('ensureRelay failed', err);
       }

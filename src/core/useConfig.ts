@@ -1,8 +1,9 @@
-import { type Accessor, type Setter } from 'solid-js';
+import { createRoot, type Accessor, type Setter } from 'solid-js';
 
 import { sortBy } from 'lodash';
 import uniq from 'lodash/uniq';
-import { Kind, type Event as NostrEvent } from 'nostr-tools';
+import * as Kind from 'nostr-tools/kinds';
+import { type Event as NostrEvent } from 'nostr-tools/pure';
 
 import {
   ColumnType,
@@ -17,6 +18,7 @@ import {
   createStorageWithSerializer,
   createStoreWithStorage,
 } from '@/hooks/createSignalWithStorage';
+import { useTranslation } from '@/i18n/useTranslation';
 import { genericEvent } from '@/nostr/event';
 
 export type CustomEmojiConfig = {
@@ -33,6 +35,11 @@ export type Config = {
   useEmojiReaction: boolean;
   showEmojiReaction: boolean;
   showMedia: boolean; // TODO 'always' | 'only-followings' | 'never'
+  embedding: {
+    twitter: boolean;
+    youtube: boolean;
+    ogp: boolean;
+  };
   hideCount: boolean;
   mutedPubkeys: string[];
   mutedKeywords: string[];
@@ -81,6 +88,11 @@ const InitialConfig = (): Config => ({
   useEmojiReaction: true,
   showEmojiReaction: true,
   showMedia: true,
+  embedding: {
+    twitter: true,
+    youtube: true,
+    ogp: true,
+  },
   hideCount: false,
   mutedPubkeys: [],
   mutedKeywords: [],
@@ -95,9 +107,13 @@ const deserializer = (json: string): Config =>
   }) as Config;
 
 const storage = createStorageWithSerializer(() => window.localStorage, serializer, deserializer);
-const [config, setConfig] = createStoreWithStorage('RabbitConfig', InitialConfig(), storage);
+const [config, setConfig] = createRoot(() =>
+  createStoreWithStorage('RabbitConfig', InitialConfig(), storage),
+);
 
 const useConfig = (): UseConfig => {
+  const i18n = useTranslation();
+
   const addRelay = (relayUrl: string) => {
     setConfig('relayUrls', (current) => uniq([...current, relayUrl]));
   };
@@ -181,7 +197,7 @@ const useConfig = (): UseConfig => {
   const isPubkeyMuted = (pubkey: string) => config.mutedPubkeys.includes(pubkey);
 
   const hasMutedKeyword = (event: NostrEvent) => {
-    if (event.kind === Kind.Text) {
+    if (event.kind === Kind.ShortTextNote) {
       return config.mutedKeywords.some((keyword) => event.content.includes(keyword));
     }
     return false;
@@ -192,7 +208,7 @@ const useConfig = (): UseConfig => {
     return (
       isPubkeyMuted(event.pubkey) ||
       ev.taggedPubkeys().some(isPubkeyMuted) ||
-      (event.kind === Kind.Text && hasMutedKeyword(event))
+      (event.kind === Kind.ShortTextNote && hasMutedKeyword(event))
     );
   };
 
@@ -203,8 +219,8 @@ const useConfig = (): UseConfig => {
     const columns: ColumnType[] = [
       createFollowingColumn({ width: 'widest', pubkey }),
       createNotificationColumn({ pubkey }),
-      createPostsColumn({ name: '自分の投稿', pubkey }),
-      createReactionsColumn({ name: '自分のリアクション', pubkey }),
+      createPostsColumn({ name: i18n()('column.myPosts'), pubkey }),
+      createReactionsColumn({ name: i18n()('column.myReactions'), pubkey }),
     ];
 
     if (navigator.language.includes('ja')) {

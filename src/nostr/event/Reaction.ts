@@ -1,4 +1,5 @@
-import { Event as NostrEvent, Kind } from 'nostr-tools';
+import * as Kind from 'nostr-tools/kinds';
+import { Event as NostrEvent } from 'nostr-tools/pure';
 
 import GenericEvent from '@/nostr/event/GenericEvent';
 

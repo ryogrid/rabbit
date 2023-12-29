@@ -16,6 +16,15 @@ export const isVideoUrl = (urlString: string): boolean => {
   }
 };
 
+export const isWebSocketUrl = (urlString: string): boolean => {
+  try {
+    const url = new URL(urlString);
+    return /^wss?:$/.test(url.protocol);
+  } catch {
+    return false;
+  }
+};
+
 /**
  * Generate a URL of thumbnail for a given URL.
  */
@@ -39,12 +48,56 @@ export const thumbnailUrl = (urlString: string): string => {
     if (url.host === 'i.gyazo.com') {
       const result = new URL(url);
       result.host = 'thumb.gyazo.com';
-      result.pathname = `/thumb/640_w${url.pathname}`;
+      result.pathname = `/thumb/640${url.pathname}`;
       return result.toString();
     }
 
     return url.toString();
   } catch {
     return urlString;
+  }
+};
+
+export const isTwitterUrl = (urlString: string): boolean => {
+  try {
+    const url = new URL(urlString);
+    return url.protocol === 'https:' && (url.host === 'twitter.com' || url.host === 'x.com');
+  } catch {
+    return false;
+  }
+};
+
+type YouTubeVideo = {
+  videoId: string;
+};
+
+const YouTubeHosts = ['www.youtube.com', 'm.youtube.com', 'youtube.com'];
+export const parseYouTubeVideoUrl = (urlString: string): YouTubeVideo | null => {
+  try {
+    const url = new URL(urlString);
+    if (url.protocol !== 'https:') return null;
+
+    if (YouTubeHosts.includes(url.host)) {
+      if (url.pathname === '/watch') {
+        const videoId = url.searchParams.get('v');
+        if (videoId != null) {
+          return { videoId };
+        }
+      }
+      if (url.pathname.startsWith('/shorts/')) {
+        const match = url.pathname.match(/^\/shorts\/([0-9a-zA-Z_-]*)$/);
+        if (match) {
+          return { videoId: match[1] };
+        }
+      }
+    }
+
+    if (url.host === 'youtu.be' && url.pathname.lastIndexOf('/') === 0) {
+      return { videoId: url.pathname };
+    }
+
+    return null;
+  } catch {
+    return null;
   }
 };

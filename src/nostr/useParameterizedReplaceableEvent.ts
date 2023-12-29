@@ -1,10 +1,14 @@
-import { createMemo, observable } from 'solid-js';
+import { createMemo } from 'solid-js';
 
 import { createQuery, useQueryClient, type CreateQueryResult } from '@tanstack/solid-query';
-import { Event as NostrEvent } from 'nostr-tools';
+import { Event as NostrEvent } from 'nostr-tools/pure';
 
 import { pickLatestEvent } from '@/nostr/event/comparator';
-import { registerTask, BatchedEventsTask } from '@/nostr/useBatchedEvents';
+import {
+  registerTask,
+  BatchedEventsTask,
+  ParameterizedReplaceableEventTask,
+} from '@/nostr/useBatchedEvents';
 import timeout from '@/utils/timeout';
 
 // Parameterized Replaceable Event
@@ -26,15 +30,15 @@ const useParameterizedReplaceableEvent = (
   const props = createMemo(propsProvider);
   const genQueryKey = () => ['useFollowings', props()] as const;
 
-  const query = createQuery(
-    genQueryKey,
-    ({ queryKey, signal }) => {
+  const query = createQuery(() => ({
+    queryKey: genQueryKey(),
+    queryFn: ({ queryKey, signal }) => {
       console.debug('useFollowings');
       const [, currentProps] = queryKey;
       if (currentProps == null) return Promise.resolve(null);
 
       const { kind, author, identifier } = currentProps;
-      const task = new BatchedEventsTask({
+      const task = new BatchedEventsTask<ParameterizedReplaceableEventTask>({
         type: 'ParameterizedReplaceableEvent',
         kind,
         author,
@@ -55,11 +59,9 @@ const useParameterizedReplaceableEvent = (
         `useParameterizedReplaceableEvent: ${kind}:${author}:${identifier}`,
       )(promise);
     },
-    {
-      staleTime: 5 * 60 * 1000, // 5 min
-      cacheTime: 4 * 60 * 60 * 1000, // 4 hour
-    },
-  );
+    staleTime: 5 * 60 * 1000, // 5 min
+    gcTime: 4 * 60 * 60 * 1000, // 4 hour
+  }));
 
   const event = () => query.data ?? null;
 

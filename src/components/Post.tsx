@@ -1,5 +1,6 @@
 import { Component, JSX, Show, createSignal } from 'solid-js';
 
+import LazyLoad from '@/components/utils/LazyLoad';
 import useDetectOverflow from '@/hooks/useDetectOverflow';
 import useFormatDate from '@/hooks/useFormatDate';
 import { useTranslation } from '@/i18n/useTranslation';
@@ -21,7 +22,7 @@ const Post: Component<PostProps> = (props) => {
   const { overflow, elementRef } = useDetectOverflow();
   const formatDate = useFormatDate();
 
-  const [showOverflow, setShowOverflow] = createSignal();
+  const [showOverflow, setShowOverflow] = createSignal(false);
   const createdAt = () => formatDate(props.createdAt);
   const createdAtFull = () => props.createdAt.toLocaleString();
 
@@ -41,7 +42,11 @@ const Post: Component<PostProps> = (props) => {
           }}
         >
           <Show when={author()?.picture} keyed>
-            {(url) => <img src={url} alt="icon" class="h-full w-full rounded object-cover" />}
+            {(url) => (
+              <LazyLoad>
+                {() => <img src={url} alt="icon" class="h-full w-full rounded object-cover" />}
+              </LazyLoad>
+            )}
           </Show>
         </button>
         <div class="min-w-0 flex-auto">
@@ -88,7 +93,7 @@ const Post: Component<PostProps> = (props) => {
           <div
             ref={elementRef}
             class="overflow-hidden"
-            classList={{ 'max-h-screen': !showOverflow() }}
+            classList={{ 'max-h-screen': !showOverflow(), 'max-h-none': showOverflow() }}
           >
             {props.content}
           </div>

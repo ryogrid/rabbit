@@ -1,6 +1,6 @@
-import { getEventHash, Kind, type UnsignedEvent } from 'nostr-tools';
+import * as Kind from 'nostr-tools/kinds';
+import { verifyEvent, getEventHash, type UnsignedEvent } from 'nostr-tools/pure';
 
-// import '@/types/nostr.d';
 import { ProfileWithOtherProperties, Profile } from '@/nostr/event/Profile';
 import { ReactionTypes } from '@/nostr/event/Reaction';
 import usePool from '@/nostr/usePool';
@@ -80,12 +80,16 @@ const useCommands = () => {
     event: UnsignedEvent,
   ): Promise<Promise<void>[]> => {
     const preSignedEvent: UnsignedEvent & { id?: string } = { ...event };
-    preSignedEvent.id = getEventHash(preSignedEvent);
+    const id = getEventHash(preSignedEvent);
+    preSignedEvent.id = id;
 
     if (window.nostr == null) {
       throw new Error('NIP-07 implementation not found');
     }
     const signedEvent = await window.nostr.signEvent(preSignedEvent);
+    if (!verifyEvent({ ...signedEvent, id })) {
+      throw new Error('nostr.signEvent returned invalid data');
+    }
 
     return relayUrls.map(async (relayUrl) => {
       const relay = await pool().ensureRelay(relayUrl);
@@ -105,7 +109,7 @@ const useCommands = () => {
     const tags = buildTags(params);
 
     const preSignedEvent: UnsignedEvent = {
-      kind: 1,
+      kind: Kind.ShortTextNote,
       pubkey,
       created_at: epoch(),
       tags,
@@ -119,18 +123,21 @@ const useCommands = () => {
     relayUrls,
     pubkey,
     eventId,
+    kind,
     reactionTypes,
     notifyPubkey,
   }: {
     relayUrls: string[];
     pubkey: string;
     eventId: string;
+    kind: number;
     reactionTypes: ReactionTypes;
     notifyPubkey: string;
   }): Promise<Promise<void>[]> => {
     const tags = [
       ['e', eventId, ''],
       ['p', notifyPubkey],
+      ['k', kind.toString()],
     ];
 
     if (reactionTypes.type === 'CustomEmoji') {
@@ -138,7 +145,7 @@ const useCommands = () => {
     }
 
     const preSignedEvent: UnsignedEvent = {
-      kind: 7,
+      kind: Kind.Reaction,
       pubkey,
       created_at: epoch(),
       tags,
@@ -152,20 +159,23 @@ const useCommands = () => {
     relayUrls,
     pubkey,
     eventId,
+    kind,
     notifyPubkey,
   }: {
     relayUrls: string[];
     pubkey: string;
     eventId: string;
+    kind: number;
     notifyPubkey: string;
   }): Promise<Promise<void>[]> => {
     const preSignedEvent: UnsignedEvent = {
-      kind: 6 as Kind,
+      kind: kind === 1 ? Kind.Repost : 16 /* generic repost */,
       pubkey,
       created_at: epoch(),
       tags: [
         ['e', eventId, ''],
         ['p', notifyPubkey],
+        ['k', kind.toString()],
       ],
       content: '',
     };

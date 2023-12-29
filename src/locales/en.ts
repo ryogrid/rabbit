@@ -57,6 +57,8 @@ export default {
     unmute: 'Unmute',
     followMyself: 'Follow myself',
     unfollowMyself: 'Unfollow myself',
+    addUserColumn: 'Add user column',
+    addUserHomeColumn: 'Add home column',
     confirmUnfollow: 'Do you really want to unfollow?',
     confirmUpdateEvenIfEmpty: stripMargin`
       Your follow list appears to be empty.
@@ -149,6 +151,8 @@ export default {
       reaction: 'Reaction',
       enableEmojiReaction: 'Enable emoji reaction',
       showEmojiReaction: 'Show emoji reactions on posts',
+      embedding: 'Embedded contents',
+      embeddingDescription: 'Enable/disable embedding',
       others: 'Others',
       keepOpenPostForm: 'Remain the input field open after posting',
       showMediaByDefault: 'Load media by default',

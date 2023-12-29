@@ -1,19 +1,21 @@
 import { createSignal, createEffect, onMount, onCleanup, on } from 'solid-js';
 
 import uniqBy from 'lodash/uniqBy';
-import { utils } from 'nostr-tools';
+import { type Filter } from 'nostr-tools/filter';
+import { type SubscribeManyParams } from 'nostr-tools/pool';
+import { type Event as NostrEvent } from 'nostr-tools/pure';
+import { insertEventIntoDescendingList } from 'nostr-tools/utils';
 
 import useConfig from '@/core/useConfig';
 import { sortEvents } from '@/nostr/event/comparator';
 import usePool from '@/nostr/usePool';
 import useStats from '@/nostr/useStats';
-
-import type { Event as NostrEvent, Filter, SubscriptionOptions } from 'nostr-tools';
+import epoch from '@/utils/epoch';
 
 export type UseSubscriptionProps = {
   relayUrls: string[];
   filters: Filter[];
-  options?: SubscriptionOptions;
+  options?: SubscribeManyParams;
   /**
    * subscribe not only stored events but also new events published after the subscription
    * default is true
@@ -60,10 +62,19 @@ const useSubscription = (propsProvider: () => UseSubscriptionProps | null) => {
   });
 
   const addEvent = (event: NostrEvent) => {
-    const limit = propsProvider()?.limit ?? 500; // 50;
+    const SecondsToIgnore = 300; // 5 min
+    const limit = propsProvider()?.limit ?? 500; //50;
+
+
+    const diffSec = event.created_at - epoch();
+    if (diffSec > SecondsToIgnore) return;
+    if (diffSec > 0) {
+      setTimeout(() => addEvent(event), diffSec * 1000);
+      return;
+    }
 
     setEvents((current) => {
-      const sorted = utils.insertEventIntoDescendingList(current, event).slice(0, limit);
+      const sorted = insertEventIntoDescendingList(current, event).slice(0, limit);
       // FIXME なぜか重複して取得される問題があるが一旦uniqByで対処
       // https://github.com/syusui-s/rabbit/issues/5
       const deduped = uniqBy(sorted, (e) => e.id);
@@ -80,8 +91,6 @@ const useSubscription = (propsProvider: () => UseSubscriptionProps | null) => {
     const props = propsProvider();
     if (props == null) return;
     const { relayUrls, filters, options, onEvent, onEOSE, continuous = true } = props;
-
-    const sub = pool().sub(relayUrls, filters, options);
     let subscribing = true;
     count += 1;
 
@@ -89,38 +98,45 @@ const useSubscription = (propsProvider: () => UseSubscriptionProps | null) => {
     let eose = false;
     const storedEvents: NostrEvent[] = [];
 
-    sub.on('event', (event: NostrEvent) => {
-      if (onEvent != null) {
-        onEvent(event as NostrEvent & { id: string });
-      }
-      if (props.clientEventFilter != null && !props.clientEventFilter(event)) {
-        return;
-      }
+    const sub = pool().subscribeMany(
+      relayUrls,
+      filters,
+      options ?? {
+        eoseTimeout: 12000,
+        maxWait: 6000,
+        onevent: (event: NostrEvent) => {
+          if (onEvent != null) {
+            onEvent(event as NostrEvent & { id: string });
+          }
+          if (props.clientEventFilter != null && !props.clientEventFilter(event)) {
+            return;
+          }
 
-      if (!eose) {
-        pushed = true;
-        storedEvents.push(event);
-      } else {
-        addEvent(event);
-      }
-    });
+          if (!eose) {
+            pushed = true;
+            storedEvents.push(event);
+          } else {
+            addEvent(event);
+          }
+        },
+        oneose: () => {
+          if (onEOSE != null) {
+            onEOSE();
+          }
 
-    sub.on('eose', () => {
-      if (onEOSE != null) {
-        onEOSE();
-      }
+          eose = true;
+          setEvents(sortEvents(storedEvents));
 
-      eose = true;
-      setEvents(sortEvents(storedEvents));
-
-      if (!continuous) {
-        sub.unsub();
-        if (subscribing) {
-          subscribing = false;
-          count -= 1;
-        }
-      }
-    });
+          if (!continuous) {
+            sub.close();
+            if (subscribing) {
+              subscribing = false;
+              count -= 1;
+            }
+          }
+        },
+      },
+    );
 
     // avoid updating an array too rapidly while this is fetching stored events
     let updating = false;
@@ -141,7 +157,7 @@ const useSubscription = (propsProvider: () => UseSubscriptionProps | null) => {
 
     onCleanup(() => {
       console.debug('startSubscription: end');
-      sub.unsub();
+      sub.close();
       if (subscribing) {
         subscribing = false;
         count -= 1;
